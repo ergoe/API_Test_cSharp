@@ -1,0 +1,8 @@
+{
+  "appDomain": "ifAvailable",
+  "methodDisplay": "classAndMethod",
+  "diagnosticMessages": false,
+  "internalDiagnosticMessages": false,
+  "parallelizeTestCollections": false,
+  //"maxParallelThreads": 0
+}
