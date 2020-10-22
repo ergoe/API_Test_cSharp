@@ -1,15 +1,8 @@
 ﻿using AventStack.ExtentReports;
 using AventStack.ExtentReports.Gherkin.Model;
 using AventStack.ExtentReports.Reporter;
-using BoDi;
-using Io.Cucumber.Messages;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel;
-using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Text;
 using TechTalk.SpecFlow;
-using TechTalk.SpecFlow.Bindings;
+
 
 namespace Api_TestFramework
 {
@@ -17,111 +10,107 @@ namespace Api_TestFramework
     class Hooks
     {
 
-        //private static ExtentTest test;
-        private static ExtentTest scenario;
-        private static ExtentReports extentReports;
+        private readonly FeatureContext _featureContext;
+        private readonly ScenarioContext _scenarioContext;
+        private ExtentTest _currentScenarioName;
 
-        static ScenarioContext _scenarioContext;
-
-        public Hooks(ScenarioContext scenarioContext)
+        public Hooks(FeatureContext featureContext, ScenarioContext scenarioContext)
         {
-            if (scenarioContext != null)
-            {
-                _scenarioContext = scenarioContext;
-            }
+            _featureContext = featureContext;
+            _scenarioContext = scenarioContext;
         }
 
-        [BeforeScenario]
-        public void initialize()
-        {
+        //private static ExtentTest test;
+        private static ExtentTest featureName;
+        private static ExtentReports extent;
+        private static ExtentKlovReporter klov;
 
+        [AfterStep]
+        public void InsertReportSteps(ScenarioContext scenarioContext)
+        {
+            var stepType = _scenarioContext.StepContext.StepInfo.StepDefinitionType.ToString();
+
+            if (_scenarioContext.TestError == null)
+            {
+                if (stepType == "Given")
+                    _currentScenarioName.CreateNode<Given>(_scenarioContext.StepContext.StepInfo.Text);
+                else if (stepType == "When")
+                    _currentScenarioName.CreateNode<When>(_scenarioContext.StepContext.StepInfo.Text);
+                else if (stepType == "Then")
+                    _currentScenarioName.CreateNode<Then>(_scenarioContext.StepContext.StepInfo.Text);
+                else if (stepType == "And")
+                    _currentScenarioName.CreateNode<And>(_scenarioContext.StepContext.StepInfo.Text);
+            }
+            else if (_scenarioContext.TestError != null)
+            {
+                ////screenshot in the Base64 format
+                //var mediaEntity = _parallelConfig.CaptureScreenshotAndReturnModel(_scenarioContext.ScenarioInfo.Title.Trim());
+
+                if (stepType == "Given")
+                    _currentScenarioName.CreateNode<Given>(_scenarioContext.StepContext.StepInfo.Text).Fail(_scenarioContext.TestError.Message);
+                else if (stepType == "When")
+                    _currentScenarioName.CreateNode<When>(_scenarioContext.StepContext.StepInfo.Text).Fail(_scenarioContext.TestError.Message);
+                else if (stepType == "Then")
+                    _currentScenarioName.CreateNode<Then>(_scenarioContext.StepContext.StepInfo.Text).Fail(_scenarioContext.TestError.Message);
+            }
+            else if (_scenarioContext.ScenarioExecutionStatus.ToString() == "StepDefinitionPending")
+            {
+                if (stepType == "Given")
+                    _currentScenarioName.CreateNode<Given>(ScenarioStepContext.Current.StepInfo.Text).Skip("Step Definition Pending");
+                else if (stepType == "When")
+                    _currentScenarioName.CreateNode<When>(ScenarioStepContext.Current.StepInfo.Text).Skip("Step Definition Pending");
+                else if (stepType == "Then")
+                    _currentScenarioName.CreateNode<Then>(ScenarioStepContext.Current.StepInfo.Text).Skip("Step Definition Pending");
+
+            }
         }
 
         [BeforeTestRun]
         public static void InitializeReport()
         {
+            //Initialize Extent report before test starts
             var htmlReporter = new ExtentHtmlReporter(@"D:\gitRepos\Api_TestFramework\ExtentReport.html");
-            //htmlReporter.Config.Theme = AventStack.ExtentReports.Reporter.Configuration.Theme.Dark;
-            extentReports = new ExtentReports();
-            extentReports.AttachReporter(htmlReporter);
-        }
+            htmlReporter.Config.Theme = AventStack.ExtentReports.Reporter.Configuration.Theme.Dark;
+            //Attach report to reporter
+            extent = new AventStack.ExtentReports.ExtentReports();
+            klov = new ExtentKlovReporter();
 
-        [AfterTestRun]
-        public static void TearDownReport()
-        {
-            extentReports.Flush();
-        }
-
-        [BeforeFeature]
-        public static void BeforeFeature(FeatureContext featureContext)
-        {
-            scenario = extentReports.CreateTest<Feature>(featureContext.FeatureInfo.Title);
-            
+            extent.AttachReporter(htmlReporter);
         }
 
         [BeforeScenario]
-        public static void BeforeScenario()
+        public void Initialize()
         {
-            scenario = extentReports.CreateTest<Scenario>(_scenarioContext.ScenarioInfo.Title);
+            
+            //featureName = extent.CreateTest<Feature>(_featureContext.FeatureInfo.Title);
+            featureName = extent.CreateTest<Scenario>(_scenarioContext.ScenarioInfo.Title);
+
+            //Create dynamic scenario name
+            _currentScenarioName = featureName.CreateNode<Scenario>(_scenarioContext.ScenarioInfo.Title);
         }
 
-        [AfterStep]
-        public static void InsertReportSteps(ScenarioContext scenarioContext)
+        [BeforeFeature]
+        public static void InitializeFeature()
         {
-            //var stepType = ScenarioStepContext.Current.StepInfo.StepDefinitionType.ToString();
-            var stepType = scenarioContext.StepContext.StepInfo.StepDefinitionType.ToString();
-            Console.WriteLine();
-
-            //PropertyInfo propertyInfo = typeof(ScenarioContext).GetProperty("TestStatus", BindingFlags.Instance | BindingFlags.NonPublic);
-            //MethodInfo getter = propertyInfo.GetGetMethod(nonPublic: true);
-            //object TestResult = getter.Invoke(scenarioContext, null);
-
-
-            if (scenarioContext.TestError == null)
-            {
-                if (stepType == "Given")
-                    scenario.CreateNode<Given>(scenarioContext.StepContext.StepInfo.Text);
-                else if (stepType == "When")
-                    scenario.CreateNode<When>(scenarioContext.StepContext.StepInfo.Text);
-                else if (stepType == "Then")
-                    scenario.CreateNode<Then>(scenarioContext.StepContext.StepInfo.Text);
-                else if (stepType == "And")
-                    scenario.CreateNode<And>(scenarioContext.StepContext.StepInfo.Text);
-
-            }
-            else if (scenarioContext.TestError != null)
-            {
-                if (stepType == "Given")
-                    scenario.CreateNode<Given>(scenarioContext.StepContext.StepInfo.Text).Fail(scenarioContext.TestError.Message);
-                if (stepType == "When")
-                    scenario.CreateNode<When>(scenarioContext.StepContext.StepInfo.Text).Fail(scenarioContext.TestError.Message);
-                if (stepType == "Then")
-                {
-                    scenario.CreateNode<Then>(scenarioContext.StepContext.StepInfo.Text).Fail("put this in the step");
-                    //scenario.CreateNode(new GherkinKeyword("Then"), scenarioContext.StepContext.StepInfo.Text).Fatal("put this in the step");
-
-
-                }
-                
-                Console.WriteLine();
-            }
-
-
-
-            //if (TestResult.ToString() == "StepDefinitionPending")
-            //{
-            //    if (stepType == "Given")
-            //        scenario.CreateNode<Given>(scenarioContext.StepContext.StepInfo.Text).Skip("Step Definition Pending");
-            //    if (stepType == "When")
-            //        scenario.CreateNode<When>(scenarioContext.StepContext.StepInfo.Text).Skip("Step Definition Pending");
-            //    if (stepType == "Then")
-            //        scenario.CreateNode<Then>(scenarioContext.StepContext.StepInfo.Text).Skip("Step Definition Pending");
-            //}
-
-
-
+            ////Get feature Name
+            //featureName = extent.CreateTest<Feature>(_featureContext.FeatureInfo.Title);
         }
 
+
+
+        [AfterScenario]
+        public void TestStop()
+        {
+            
+        }
+
+        [AfterTestRun]
+        public static void CleanUpAndReport()
+        {
+            //Flush report once all tests complete
+            extent.Flush();
+
+        }
 
 
 
