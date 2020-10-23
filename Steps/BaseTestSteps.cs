@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using Api_TestFramework.Framework;
 using AventStack.ExtentReports;
 using AventStack.ExtentReports.Gherkin.Model;
 using AventStack.ExtentReports.Reporter;
@@ -61,6 +62,12 @@ namespace Api_TestFramework.Steps
             var actualContentType = headers.FirstOrDefault(x => x.Name == "Content-Type");
             
             Assert.Equal(contenType, actualContentType.Value);
+        }
+
+        [When(@"Attempt to get xml from query")]
+        public void WhenAttemptToGetXmlFromQuery()
+        {
+            HighJumpDB.TestConnection();
         }
 
 

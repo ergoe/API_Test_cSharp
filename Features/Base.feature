@@ -17,3 +17,7 @@
     @smoke
     Scenario: Validate response content
       When  user gets 'https://www.metaweather.com/api/location/44418'
+
+    @smoke
+    Scenario: Validate sql response
+        When Attempt to get xml from query

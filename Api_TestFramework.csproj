@@ -13,6 +13,7 @@
     </Target>
 
     <ItemGroup>
+        <PackageReference Include="Dapper.Transaction" Version="2.0.35.2" />
         <PackageReference Include="ExtentReports" Version="4.1.0" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.1" />
         <PackageReference Include="RestSharp" Version="106.11.7" />
@@ -21,6 +22,7 @@
         <PackageReference Include="SpecFlow.Tools.MsBuild.Generation" Version="3.4.14" />
         <PackageReference Include="SpecFlow.xUnit" Version="3.4.14" />
         <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.7.0" />
+        <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
         <PackageReference Include="xunit" Version="2.4.0" />
         <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
     </ItemGroup>
@@ -30,9 +32,28 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Compile Update="Resources\Resource.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Resource.resx</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Update="Resources\Resource.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Resource.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+    </ItemGroup>
+
+    <ItemGroup>
       <None Update="xunit.runner.json">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Framework\Queries\" />
     </ItemGroup>
 
 </Project>
