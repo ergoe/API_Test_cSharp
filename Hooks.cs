@@ -2,7 +2,7 @@
 using AventStack.ExtentReports.Gherkin.Model;
 using AventStack.ExtentReports.Reporter;
 using TechTalk.SpecFlow;
-
+using TechTalk.SpecFlow.CommonModels;
 
 namespace Api_TestFramework
 {
@@ -51,7 +51,12 @@ namespace Api_TestFramework
                 else if (stepType == "When")
                     _currentScenarioName.CreateNode<When>(_scenarioContext.StepContext.StepInfo.Text).Fail(_scenarioContext.TestError.Message);
                 else if (stepType == "Then")
-                    _currentScenarioName.CreateNode<Then>(_scenarioContext.StepContext.StepInfo.Text).Fail(_scenarioContext.TestError.Message);
+                {
+                    var message = _scenarioContext.TestError.Message;
+                    _currentScenarioName.CreateNode<Then>(_scenarioContext.StepContext.StepInfo.Text).Fail(message, null).CreateNode(message).Fail("");
+                    //_currentScenarioName.CreateNode<Then>(message);
+                    //_currentScenarioName.CreateNode(message,"");
+                }
             }
             else if (_scenarioContext.ScenarioExecutionStatus.ToString() == "StepDefinitionPending")
             {
@@ -60,8 +65,11 @@ namespace Api_TestFramework
                 else if (stepType == "When")
                     _currentScenarioName.CreateNode<When>(ScenarioStepContext.Current.StepInfo.Text).Skip("Step Definition Pending");
                 else if (stepType == "Then")
+                {
                     _currentScenarioName.CreateNode<Then>(ScenarioStepContext.Current.StepInfo.Text).Skip("Step Definition Pending");
-
+                    
+                    
+                }
             }
         }
 
