@@ -8,7 +8,7 @@
       Then  should get '2001' response
 
     @smoke
-    Scenario: Validate Content-type is application/json 
+    Scenario: Validate Content-type is application/jso 
       When  user gets 'https://www.metaweather.com/api/location/44418'
       Then  should get Content-type 'application/json'
 
