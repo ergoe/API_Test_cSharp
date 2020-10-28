@@ -1,8 +1,11 @@
 ﻿using AventStack.ExtentReports;
 using AventStack.ExtentReports.Gherkin.Model;
 using AventStack.ExtentReports.Reporter;
+using System;
+using System.IO;
 using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.CommonModels;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Api_TestFramework
 {
@@ -77,7 +80,11 @@ namespace Api_TestFramework
         public static void InitializeReport()
         {
             //Initialize Extent report before test starts
-            var htmlReporter = new ExtentHtmlReporter(@"D:\gitRepos\Api_TestFramework\ExtentReport.html");
+            //var htmlReporter = new ExtentHtmlReporter(@"D:\gitRepos\Api_TestFramework\ExtentReport.html");
+            DirectoryInfo dirInfo = new DirectoryInfo(Directory.GetCurrentDirectory());
+            DirectoryInfo solutionPath = dirInfo.Parent.Parent.Parent;
+            var htmlReporter = new ExtentHtmlReporter(solutionPath + @"\ExtentReport.html");
+           
             htmlReporter.Config.Theme = AventStack.ExtentReports.Reporter.Configuration.Theme.Dark;
             //Attach report to reporter
             extent = new AventStack.ExtentReports.ExtentReports();
