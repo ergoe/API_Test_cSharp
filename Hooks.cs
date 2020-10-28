@@ -89,7 +89,8 @@ namespace Api_TestFramework
             //Attach report to reporter
             extent = new AventStack.ExtentReports.ExtentReports();
             klov = new ExtentKlovReporter();
-            klov.InitMongoDbConnection("localhost", 27017);
+            //klov.InitMongoDbConnection("localhost", 27017);
+            //klov.InitMongoDbConnection("10.100.100.187", 27017);
 
             klov.ProjectName = "APIAutomation Test";
             klov.InitKlovServerConnection("http://localhost:80");
@@ -97,7 +98,7 @@ namespace Api_TestFramework
             klov.ReportName = "Karthik KK" + System.DateTime.Now.ToString();
 
             extent.AttachReporter(htmlReporter);
-            extent.AttachReporter(klov);
+            //extent.AttachReporter(klov);
             
         }
 
