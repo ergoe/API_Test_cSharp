@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
-
+		<UseNETCoreGenerator>true</UseNETCoreGenerator>
         <IsPackable>false</IsPackable>
     </PropertyGroup>
     <Target Name="AfterUpdateFeatureFilesInProject">
