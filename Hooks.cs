@@ -12,6 +12,8 @@ namespace Api_TestFramework
     [Binding]
     class Hooks
     {
+        // Mongodb connection string for Mongodb 
+        //mongodb+srv://egoeckeritz:<password>@cluster0.yompo.mongodb.net/<dbname>?retryWrites=true&w=majority
 
         private readonly FeatureContext _featureContext;
         private readonly ScenarioContext _scenarioContext;
@@ -89,7 +91,11 @@ namespace Api_TestFramework
             //Attach report to reporter
             extent = new AventStack.ExtentReports.ExtentReports();
             klov = new ExtentKlovReporter();
+            //mongodb+srv://egoeckeritz:<password>@cluster0.yompo.mongodb.net/<dbname>?retryWrites=true&w=majority
             //klov.InitMongoDbConnection("localhost", 27017);
+            
+            // MongoDB atlas
+            klov.InitKlovServerConnection("mongodb+srv://egoeckeritz:L @goe5910mb@cluster0.yompo.mongodb.net/<dbname>?retryWrites=true&w=majority");
             //klov.InitMongoDbConnection("10.100.100.187", 27017);
 
             klov.ProjectName = "APIAutomation Test";
